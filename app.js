@@ -216,7 +216,8 @@ function toggleMobileNav() {
 const WRAP        = "mx-auto max-w-[1080px] px-4 pt-10 pb-16 sm:px-6 sm:pt-12";
 const WRAP_DETAIL = "mx-auto max-w-[1080px] px-4 pt-6 pb-16 sm:px-6 sm:pt-8";
 
-const GRID  = "mt-6 grid grid-cols-1 gap-4 mx-auto max-w-[400px] sm:max-w-none sm:grid-cols-[repeat(auto-fill,minmax(260px,1fr))] sm:gap-5";
+/* Mobile: narrower card, taller feel. sm+: auto-fill grid. */
+const GRID  = "mt-6 grid grid-cols-1 gap-4 mx-auto max-w-[340px] sm:max-w-none sm:grid-cols-[repeat(auto-fill,minmax(260px,1fr))] sm:gap-5";
 
 const H1  = "mb-3 text-[clamp(30px,5vw,52px)] font-extrabold leading-[1.03] tracking-[-0.045em] text-g";
 const H1S = "mb-2 text-[clamp(28px,4vw,42px)] font-extrabold leading-[1.08] tracking-[-0.04em] text-g";
@@ -712,14 +713,18 @@ function mine() {
   const row = (e) => {
     const j = S.joined[e.id], asking = askCancel === e.id;
 
+    /* Always exactly 2 buttons — they swap roles when confirming cancel. */
     const action = j
       ? asking
-        ? `<div class="flex flex-col gap-2">
-             <button class="${btn("x", true)}" data-act="cancelyes" data-v="${e.id}">Yes, cancel</button>
-             <button class="${btn("ow", true)}" data-act="cancelno">Keep it</button>
-           </div>`
-        : `<button class="${btn("ow", true)}" data-act="cancelask" data-v="${e.id}">Cancel</button>`
-      : `<button class="${btn("ow", true)}" data-act="save" data-v="${e.id}">Remove</button>`;
+        ? /* Confirming: [Keep it] [Yes, cancel] */
+          `<button class="${btn("ow", true)}" data-act="cancelno">Keep it</button>
+           <button class="${btn("x", true)}" data-act="cancelyes" data-v="${e.id}">Yes, cancel</button>`
+        : /* Default joined: [View details] [Cancel] */
+          `<a class="${btn("p", true)}" href="#/event/${e.id}">View details</a>
+           <button class="${btn("ow", true)}" data-act="cancelask" data-v="${e.id}">Cancel</button>`
+      : /* Saved: [View details] [Remove] */
+        `<a class="${btn("p", true)}" href="#/event/${e.id}">View details</a>
+         <button class="${btn("ow", true)}" data-act="save" data-v="${e.id}">Remove</button>`;
 
     return `
 <div class="event-card mt-4 grid grid-cols-1 items-center gap-4 rounded-2xl bg-g p-3.5 text-white
@@ -750,7 +755,6 @@ function mine() {
   </div>
 
   <div class="flex flex-row items-stretch gap-2 sm:flex-col [&>*]:flex-1 sm:[&>*]:flex-none sm:[&>*]:w-[152px]">
-    <a class="${btn("p", true)}" href="#/event/${e.id}">View details</a>
     ${action}
   </div>
 </div>`;
