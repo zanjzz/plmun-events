@@ -1,6 +1,4 @@
-/* =====================================================================
-   PLMUN Campus Events — Global Stylesheet
-   ===================================================================== */
+/* PLMUN Campus Events — Global Stylesheet */
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -20,6 +18,7 @@
   --ease-out:    cubic-bezier(.22,1,.36,1);
 }
 
+/* base */
 html {
   scroll-padding-top: calc(var(--nav-h) + env(safe-area-inset-top,0px) + 8px);
   scroll-behavior: smooth;
@@ -36,14 +35,17 @@ body {
   font-feature-settings: "cv11", "ss01";
 }
 
+/* scrollbar */
 ::-webkit-scrollbar             { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track       { background: transparent; }
 ::-webkit-scrollbar-thumb       { background: #c2d4ca; border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: #94b3a2; }
 
+/* focus + selection */
 :focus-visible { outline: 2px solid var(--g); outline-offset: 3px; border-radius: 5px; }
 ::selection    { background: #b8edd0; color: var(--g-dark); }
 
+/* lucide icons */
 [data-lucide],
 .lucide {
   display: inline-block;
@@ -51,29 +53,24 @@ body {
   flex-shrink: 0;
 }
 
-/* =====================================================================
-   TYPOGRAPHY HELPERS
-   ===================================================================== */
+/* typography helpers */
 .type-hero    { font-size: clamp(34px, 5.5vw, 56px); font-weight: 800; line-height: 1.03; letter-spacing: -0.045em; color: var(--g); }
 .type-section { font-size: clamp(24px, 3.2vw, 34px); font-weight: 800; line-height: 1.1; letter-spacing: -0.035em; color: var(--g); }
 .type-sub     { font-size: 11.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--g); opacity: .7; }
 .type-body    { font-size: 15px; line-height: 1.65; color: var(--mut); }
 
-/* =====================================================================
-   KEYFRAMES
-   ===================================================================== */
+/* keyframes */
 @keyframes fadeUp  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes scaleIn { from { opacity: 0; transform: scale(.985); }     to { opacity: 1; transform: scale(1); } }
 @keyframes shimmer { 0% { background-position: -600px 0; } 100% { background-position: 600px 0; } }
 
+/* page transition */
 .view-enter { animation: fadeUp 220ms var(--ease-out) both; }
 
-/* =====================================================================
-   HEADER / NAV
-   ===================================================================== */
+/* header / nav */
 header {
   border-bottom: 1px solid rgba(255,255,255,.07);
-  transition: transform 320ms cubic-bezier(.22,1,.36,1);
+  transition: transform 320ms cubic-bezier(.22,1,.36,1), background-color 300ms ease;
   will-change: transform;
 }
 header.nav-hidden { transform: translateY(-100%); }
@@ -98,9 +95,7 @@ header.nav-hidden { transform: translateY(-100%); }
 #nav-mobile a:focus-visible { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.06); }
 #nav-mobile a[aria-current="page"] { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.1); color: #fff; }
 
-/* =====================================================================
-   HERO
-   ===================================================================== */
+/* hero */
 .hero-section {
   background: var(--g-dark);
   border-bottom: 1px solid rgba(10,74,43,.08);
@@ -120,9 +115,7 @@ header.nav-hidden { transform: translateY(-100%); }
   pointer-events: none;
 }
 
-/* =====================================================================
-   EVENT CARD (grid card — unchanged)
-   ===================================================================== */
+/* event card */
 .event-card {
   --card-accent: #7dd3a0;
   --card-shadow: 0 1px 3px rgba(10,74,43,.07), 0 4px 14px -4px rgba(10,74,43,.10);
@@ -195,6 +188,7 @@ header.nav-hidden { transform: translateY(-100%); }
 .event-card__text {
   display: flex; flex-direction: column;
   gap: .5em; min-width: 0;
+  margin-top: .35rem;
 }
 
 .event-card__title {
@@ -300,9 +294,7 @@ header.nav-hidden { transform: translateY(-100%); }
   .event-card__description { font-size: .78rem; min-height: 2.42em; }
 }
 
-/* =====================================================================
-   BUTTONS
-   ===================================================================== */
+/* buttons */
 .btn-base {
   transition:
     background   150ms var(--ease),
@@ -315,9 +307,19 @@ header.nav-hidden { transform: translateY(-100%); }
 .btn-base:hover:not(:disabled)  { transform: translateY(-1px); }
 .btn-base:active:not(:disabled) { transform: translateY(0); }
 
-/* =====================================================================
-   FORMS
-   ===================================================================== */
+/* light mode: primary CTA is solid black */
+html:not(.dark) .btn-base.bg-g {
+  background-color: #0b0b0b !important;
+  border-color: #0b0b0b !important;
+  color: #ffffff !important;
+}
+html:not(.dark) .btn-base.bg-g:hover {
+  background-color: #1d1d1d !important;
+  border-color: #1d1d1d !important;
+  color: #ffffff !important;
+}
+
+/* forms */
 input, select, textarea {
   transition: border-color 150ms var(--ease), box-shadow 150ms var(--ease), background 150ms var(--ease);
 }
@@ -362,9 +364,7 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
 .search-input-wrap input::-webkit-search-cancel-button:hover { opacity: .9; }
 .search-input-wrap input::-moz-search-clear { cursor: pointer; opacity: .55; }
 
-/* =====================================================================
-   SCROLL-REVEAL
-   ===================================================================== */
+/* scroll-reveal */
 .reveal {
   opacity: 0; transform: translateY(10px);
   transition: opacity 380ms var(--ease-out), transform 380ms var(--ease-out);
@@ -391,9 +391,7 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
   transition: none !important; animation: none !important;
 }
 
-/* =====================================================================
-   TOAST
-   ===================================================================== */
+/* toast */
 #toast {
   pointer-events: none; left: 50%;
   transform: translateX(-50%) translateY(10px);
@@ -402,17 +400,13 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
 }
 #toast[data-show] { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* =====================================================================
-   CATEGORY PILLS
-   ===================================================================== */
+/* category pills */
 .cat-pill {
   transition: background 140ms var(--ease), color 140ms var(--ease),
               border-color 140ms var(--ease), box-shadow 140ms var(--ease);
 }
 
-/* =====================================================================
-   DETAIL PAGE — info rows
-   ===================================================================== */
+/* detail page info rows */
 .detail-info-row {
   display: grid;
   grid-template-columns: 1.5rem minmax(0, 1fr);
@@ -426,9 +420,7 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
 .detail-info-row:last-child { border-bottom: none; }
 .detail-info-row .row-icon { margin-top: 3px; color: var(--mut); opacity: .65; }
 
-/* =====================================================================
-   CONFIRM / TICKET
-   ===================================================================== */
+/* ticket card */
 .ticket-card { position: relative; overflow: hidden; }
 .ticket-card::before {
   content: ''; position: absolute; inset: 0;
@@ -436,9 +428,26 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
   pointer-events: none; border-radius: inherit;
 }
 
-/* =====================================================================
-   SKELETON
-   ===================================================================== */
+/* qr code — always white so it stays scannable; smaller on mobile so the whole ticket fits without scrolling */
+.qr-svg {
+  background-color: #ffffff;
+  border-radius: .5rem;
+  padding: 6px;
+  width: 110px;
+  height: 110px;
+  display: block;
+}
+@media (min-width: 640px) {
+  .qr-svg {
+    width: 180px;
+    height: 180px;
+    padding: 8px;
+  }
+}
+.qr-svg rect { fill: #0a4a2b; }
+
+
+/* skeleton */
 .skeleton {
   background: linear-gradient(90deg, #e6ece8 25%, #d4ddd7 37%, #e6ece8 63%);
   background-size: 600px 100%;
@@ -446,12 +455,10 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
   border-radius: .5rem;
 }
 
+/* empty state */
 .empty-state { animation: scaleIn 200ms var(--ease-out) both; }
 
-/* =====================================================================
-   MY EVENTS ROW
-   ===================================================================== */
-
+/* my events row */
 .me-row {
   display: grid;
   grid-template-columns: 1fr;
@@ -470,7 +477,6 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
   }
 }
 
-/* Thumbnail */
 .me-row__thumb {
   position: relative;
   width: 100%;
@@ -480,16 +486,14 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
   flex-shrink: 0;
 }
 @media (min-width: 640px) {
-  .me-row__thumb {
-    height: 100%;
-    min-height: 7.5rem;
-  }
+  .me-row__thumb { height: 100%; min-height: 7.5rem; }
 }
 
-/* Body */
 .me-row__body { min-width: 0; }
+@media (max-width: 639px) {
+  .me-row__body { margin-top: .35rem; }
+}
 
-/* Title */
 .me-title {
   margin: 0;
   font-size: 1.15rem;
@@ -505,7 +509,6 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
   .me-title { font-size: 1.3rem; }
 }
 
-/* Meta — STACKED on mobile, 2-col grid on desktop */
 .me-meta {
   display: flex;
   flex-direction: column;
@@ -521,20 +524,15 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
 }
 .me-meta-item { min-width: 0; }
 
-/* Status cell */
 .me-status-cell {
   min-width: 0;
   display: flex;
   align-items: flex-start;
 }
 @media (min-width: 640px) {
-  .me-status-cell {
-    grid-column: 1 / -1;
-    margin-top: .35rem;
-  }
+  .me-status-cell { grid-column: 1 / -1; margin-top: .35rem; }
 }
 
-/* Value */
 .me-meta-value {
   display: flex;
   align-items: center;
@@ -549,7 +547,6 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
 }
 .me-meta-value svg { width: 12px; height: 12px; opacity: .6; flex-shrink: 0; }
 
-/* Actions */
 .me-actions {
   display: flex;
   flex-direction: column;
@@ -572,9 +569,194 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
   }
 }
 
-/* =====================================================================
-   REDUCED MOTION
-   ===================================================================== */
+/* animated backgrounds */
+html:not(.dark) { background-color: #fff7e6; }
+html.dark       { background-color: #08170f; }
+body            { background-color: transparent; }
+
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+.bg-layer.active { opacity: 1; }
+
+.bg-layer > *,
+.bg-layer canvas,
+.bg-layer [data-us-project] {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+html:not(.dark) .bg-layer::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    rgba(255,247,230,.55) 0%,
+    rgba(255,247,230,.72) 50%,
+    rgba(255,247,230,.88) 100%);
+}
+
+html.dark .bg-layer::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 0%,
+    rgba(8,23,15,.20) 0%,
+    rgba(8,23,15,.48) 55%,
+    rgba(8,23,15,.78) 100%);
+}
+
+/* dark mode */
+html.dark { color-scheme: dark; }
+html.dark body { color: #e2ece6; }
+
+/* surfaces */
+html.dark .bg-cream           { background-color: transparent !important; }
+html.dark .bg-white:not(.btn-base) { background-color: rgba(19,32,24,.88) !important; backdrop-filter: blur(6px); }
+html.dark .bg-neutral-50      { background-color: #0e1a13 !important; }
+html.dark .bg-g-l:not(.btn-base):not(.cat-pill) { background-color: rgba(125,211,160,.10) !important; }
+html.dark .bg-red-50          { background-color: rgba(179,38,30,.15)  !important; }
+
+/* neon-green lift for nav + cards */
+html.dark header {
+  background-color: #0d8a4e !important;
+  box-shadow: 0 2px 14px -6px rgba(74,222,128,.32);
+}
+html.dark #nav-mobile {
+  background-color: #0a6a3a !important;
+}
+html.dark .event-card {
+  background: linear-gradient(160deg, #0d8a4e 0%, #086139 100%) !important;
+  border-color: rgba(125,211,160,.30) !important;
+  box-shadow:
+    0 0 0 1px rgba(125,211,160,.08),
+    0 4px 22px -6px rgba(125,211,160,.16),
+    0 1px 3px rgba(0,0,0,.45) !important;
+}
+html.dark .event-card:hover {
+  box-shadow:
+    0 0 0 1px rgba(125,211,160,.16),
+    0 20px 25px -5px rgba(0,0,0,.5),
+    0 10px 10px -5px rgba(0,0,0,.3) !important;
+  border-color: rgba(125,211,160,.5) !important;
+}
+html.dark .ticket-card {
+  background-color: rgba(13,138,78,.5) !important;
+  border-color: rgba(125,211,160,.32) !important;
+}
+
+/* borders */
+html.dark .border-g\/10,
+html.dark .border-g\/12,
+html.dark .border-g\/08 { border-color: rgba(125,211,160,.18) !important; }
+html.dark .border-g\/25 { border-color: rgba(125,211,160,.34) !important; }
+
+/* text */
+html.dark .text-neutral-900 { color: #e2ece6 !important; }
+html.dark .text-neutral-800 { color: #cfe0d6 !important; }
+html.dark .text-neutral-600 { color: #b9c9c0 !important; }
+html.dark .text-neutral-400 { color: #8fa39a !important; }
+html.dark .text-mut         { color: #8fa39a !important; }
+/* Titles & primary text */
+html.dark .text-g           { color: #ffffff !important; }
+html.dark .text-g\/60,
+html.dark .text-g\/55,
+html.dark .text-g\/80       { color: rgba(255,255,255,.72) !important; }
+
+/* buttons */
+html.dark .btn-base.bg-white\/10 {
+  background-color: rgba(255,255,255,.14) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,.30) !important;
+}
+html.dark .btn-base.bg-white\/10:hover {
+  background-color: rgba(255,255,255,.24) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,.48) !important;
+}
+
+/* solid white — primary CTA only (d, p, ok variants) */
+html.dark .btn-base.bg-g,
+html.dark .btn-base.border-white.bg-white,
+html.dark .btn-base.bg-ok {
+  background-color: #ffffff !important;
+  color: #0a4a2b !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 4px 14px -4px rgba(0,0,0,.45);
+}
+html.dark .btn-base.bg-ok { color: #178a2c !important; }
+
+html.dark .btn-base.bg-g:hover,
+html.dark .btn-base.border-white.bg-white:hover,
+html.dark .btn-base.bg-ok:hover {
+  background-color: #eaffef !important;
+  color: #0a4a2b !important;
+  border-color: #eaffef !important;
+}
+html.dark .btn-base.bg-ok:hover { color: #178a2c !important; }
+
+/* muted glassy — secondary outline button (o variant) */
+html.dark .btn-base.border-g\/25.bg-white {
+  background-color: rgba(255,255,255,.08) !important;
+  color: #eaffef !important;
+  border-color: rgba(125,211,160,.35) !important;
+  box-shadow: none !important;
+}
+html.dark .btn-base.border-g\/25.bg-white:hover {
+  background-color: rgba(125,211,160,.18) !important;
+  border-color: rgba(125,211,160,.55) !important;
+  color: #ffffff !important;
+}
+
+/* danger */
+html.dark .btn-base.bg-err {
+  background-color: #b3261e !important;
+  color: #ffffff !important;
+  border-color: #b3261e !important;
+}
+html.dark .btn-base.bg-err:hover {
+  background-color: #d13328 !important;
+  color: #ffffff !important;
+}
+
+html.dark .cat-pill.hover\:bg-g-l:hover {
+  background-color: rgba(125,211,160,.18) !important;
+  border-color: rgba(125,211,160,.5) !important;
+  color: #eaffef !important;
+}
+
+/* form fields */
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: rgba(14,26,19,.85) !important;
+  border-color: rgba(125,211,160,.28) !important;
+  color: #e2ece6 !important;
+}
+html.dark input::placeholder { color: #6f8478 !important; }
+html.dark input:focus,
+html.dark select:focus,
+html.dark textarea:focus {
+  border-color: #4ade80 !important;
+  box-shadow: 0 0 0 3px rgba(74,222,128,.22) !important;
+}
+
+/* misc */
+html.dark .empty-state       { border-color: rgba(125,211,160,.24) !important; }
+html.dark .detail-info-row   { border-bottom-color: rgba(125,211,160,.1) !important; }
+html.dark footer             { background-color: rgba(8,23,15,.72) !important; border-color: rgba(125,211,160,.12) !important; backdrop-filter: blur(6px); }
+html.dark ::selection        { background: #2c6e46; color: #eaffef; }
+html.dark ::-webkit-scrollbar-thumb { background: #2c4a39; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #3e6b52; }
+
+/* reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration:       0.01ms !important;
@@ -583,3 +765,20 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
     scroll-behavior: auto !important;
   }
 }
+
+/* My Events — "Events" button stays solid white in dark mode */
+html.dark .btn-base.btn-events.bg-white.border-g\/25 {
+  background-color: #ffffff !important;
+  color: #0a4a2b !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 4px 14px -4px rgba(0,0,0,.45) !important;
+}
+html.dark .btn-base.btn-events.bg-white.border-g\/25:hover {
+  background-color: #eaffef !important;
+  color: #0a4a2b !important;
+  border-color: #eaffef !important;
+}
+
+/* Confirmation page — footer hidden, gradient fills full viewport */
+body.confirm-view footer { display: none; }
+body.confirm-view        { background-color: #041a0e; }

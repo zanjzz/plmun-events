@@ -211,6 +211,291 @@ function toggleMobileNav() {
 }
 
 /* =====================================================================
+   THEME (light / dark) + BACKGROUNDS
+   ===================================================================== */
+function updateThemeIcon() {
+  const btn = document.getElementById("theme-toggle");
+  if (!btn) return;
+  const dark = document.documentElement.classList.contains("dark");
+  btn.innerHTML = `<i data-lucide="${dark ? "sun" : "moon"}" class="h-5 w-5"></i>`;
+  btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+  renderIcons();
+}
+
+function initTheme() {
+  const saved = localStorage.getItem("plmun-theme");
+  const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+  const dark = saved ? saved === "dark" : !!prefersDark;
+  document.documentElement.classList.toggle("dark", dark);
+  updateThemeIcon();
+}
+
+function toggleTheme() {
+  const dark = document.documentElement.classList.toggle("dark");
+  localStorage.setItem("plmun-theme", dark ? "dark" : "light");
+  updateThemeIcon();
+  updateBackgrounds();
+}
+
+/* ── Backgrounds ─────────────────────────────────────────────────── */
+const BG = { vanta: null, vantaLoaded: false, uniLoaded: false, skip: false };
+
+function loadScriptOnce(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) return resolve();
+    const s = document.createElement("script");
+    s.src = src;
+    s.async = true;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function mountVanta() {
+  const el = document.getElementById("vanta-bg");
+  if (!el || BG.skip) return;
+
+  if (BG.vanta) { el.classList.add("active"); return; }
+
+  try {
+    if (!window.THREE)
+      await loadScriptOnce("https://cdn.jsdelivr.net/npm/three@0.134.0/build/three.min.js");
+    if (!window.VANTA)
+      await loadScriptOnce("https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.dots.min.js");
+    if (!window.VANTA || BG.vanta) return;
+
+    BG.vanta = window.VANTA.DOTS({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.00,
+      scaleMobile: 1.00,
+      color: 0x68d601,
+      color2: 0xff1a,
+      backgroundColor: 0xffffff,
+      size: 5.70,
+      spacing: 29.00,
+      showLines: false
+    });
+    BG.vantaLoaded = true;
+    el.classList.add("active");
+  } catch (_) {}
+}
+
+function unmountVanta() {
+  const el = document.getElementById("vanta-bg");
+  if (el) el.classList.remove("active");
+}
+
+async function mountUnicorn() {
+  const el = document.getElementById("aura-bg");
+  if (!el || BG.skip) return;
+
+  el.classList.add("active");
+  if (BG.uniLoaded) return;
+  BG.uniLoaded = true;
+
+  try {
+    if (!window.UnicornStudio) {
+      await loadScriptOnce("https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js");
+    }
+    if (window.UnicornStudio && !window.UnicornStudio.isInitialized) {
+      window.UnicornStudio.init();
+      window.UnicornStudio.isInitialized = true;
+    }
+  } catch (_) {}
+}
+
+function unmountUnicorn() {
+  const el = document.getElementById("aura-bg");
+  if (el) el.classList.remove("active");
+}
+
+function updateBackgrounds() {
+  const dark = document.documentElement.classList.contains("dark");
+  if (dark) { unmountVanta(); mountUnicorn(); }
+  else      { unmountUnicorn(); mountVanta(); }
+}
+
+function initBackgrounds() {
+  BG.skip = !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+         || !!navigator.connection?.saveData;
+  requestAnimationFrame(() => setTimeout(updateBackgrounds, 60));
+}
+
+/* =====================================================================
+   CONFIRMATION PARTICLES (canvas — floating spinning rounded squares)
+   ===================================================================== */
+let particleCleanup = null;
+
+function stopConfirmationParticles() {
+  if (particleCleanup) {
+    particleCleanup();
+    particleCleanup = null;
+  }
+}
+
+function startConfirmationParticles() {
+  const canvas = document.getElementById("confirm-particles");
+  const parent = canvas?.parentElement;
+  if (!canvas || !parent) return null;
+
+  const ctx = canvas.getContext("2d", { alpha: true });
+  if (!ctx) return null;
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let w = 0, h = 0;
+
+  function resize() {
+    const rect = parent.getBoundingClientRect();
+    w = Math.max(1, rect.width);
+    h = Math.max(1, rect.height);
+    canvas.width  = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    canvas.style.width  = w + "px";
+    canvas.style.height = h + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+
+  const onResize = () => resize();
+  window.addEventListener("resize", onResize);
+
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+    return () => window.removeEventListener("resize", onResize);
+  }
+
+  /* Particle count — a bit more than before so bigger squares appear often */
+  const COUNT = Math.min(56, Math.max(28, Math.floor(w / 26)));
+  const particles = [];
+
+  function makeParticle(initial) {
+    // Sizes: mostly small, some medium, occasional big
+    const roll = Math.random();
+    const size =
+      roll > 0.88 ? 26 + Math.random() * 14   // big  (26–40)
+    : roll > 0.60 ? 14 + Math.random() * 10   // mid  (14–24)
+    :                4 + Math.random() * 10;  // small (4–14)
+
+    const isBig = size >= 20;
+    const cornerRadius = Math.min(size * 0.22, 6);
+
+    return {
+      size,
+      cornerRadius,
+      x: Math.random() * w,
+      /* All spawn below the visible area. Burst carries them up into view. */
+      y: h + 30 + Math.random() * 140,
+
+      /* Velocities in px/second — frame-rate independent */
+      vyBurst:  -(190 + Math.random() * 220) * (isBig ? 0.7 : 1),
+      vyCruise: -(7 + Math.random() * 22),
+      vxBurst:  (Math.random() - 0.5) * 90,
+      vxCruise: (Math.random() - 0.5) * 14,
+
+      rotBurst:  (Math.random() - 0.5) * 5.4,    // rad/s — fast spin at first
+      rotCruise: (Math.random() - 0.5) * 0.75,   // rad/s — gentle drift after
+
+      rot: Math.random() * Math.PI * 2,
+      vy: 0, vx: 0, rotSpeed: 0,
+      alpha: 0,
+
+      targetAlpha: isBig
+        ? 0.04 + Math.random() * 0.08
+        : 0.08 + Math.random() * 0.22,
+
+      /* Burst timing */
+      timeAlive: 0,
+      burstDelay: initial ? Math.random() * 0.45 : 0,   // staggered entry
+      burstDuration: 1.4 + Math.random() * 1.3,          // 1.4–2.7 s
+
+      color: Math.random() > 0.65
+        ? "#c8f5d8"
+        : (Math.random() > 0.5 ? "#a5e0bd" : "#7dd3a0"),
+    };
+  }
+
+  for (let i = 0; i < COUNT; i++) particles.push(makeParticle(true));
+
+  let rafId = 0;
+  let last = performance.now();
+
+  function draw(p) {
+    const s = p.size;
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.globalAlpha = p.alpha;
+    ctx.fillStyle = p.color;
+    ctx.shadowColor = p.color;
+    ctx.shadowBlur = 12;
+
+    if (typeof ctx.roundRect === "function") {
+      ctx.beginPath();
+      ctx.roundRect(-s / 2, -s / 2, s, s, p.cornerRadius);
+      ctx.fill();
+    } else {
+      /* Fallback for browsers without roundRect */
+      ctx.fillRect(-s / 2, -s / 2, s, s);
+    }
+    ctx.restore();
+  }
+
+  function frame(now) {
+    const dtSec = Math.min((now - last) / 1000, 0.1);
+    last = now;
+    ctx.clearRect(0, 0, w, h);
+
+    for (const p of particles) {
+      p.timeAlive += dtSec;
+
+      /* Still waiting to burst */
+      if (p.timeAlive < p.burstDelay) continue;
+
+      const t = Math.min(1, (p.timeAlive - p.burstDelay) / p.burstDuration);
+      /* Ease-out cubic — fast at first, gently decelerating */
+      const ease = 1 - Math.pow(1 - t, 3);
+
+      p.vy       = p.vyBurst  + (p.vyCruise  - p.vyBurst)  * ease;
+      p.vx       = p.vxBurst  + (p.vxCruise  - p.vxBurst)  * ease;
+      p.rotSpeed = p.rotBurst + (p.rotCruise - p.rotBurst) * ease;
+
+      /* Fade in over the first 35% of the burst */
+      const alphaT = Math.min(1, t / 0.35);
+      p.alpha = p.targetAlpha * (1 - Math.pow(1 - alphaT, 3));
+
+      p.y   += p.vy * dtSec;
+      p.x   += p.vx * dtSec;
+      p.rot += p.rotSpeed * dtSec;
+
+      /* Recycle once off the top — resets with no burst (cruise-only drift) */
+      if (p.y + p.size < -60) {
+        const fresh = makeParticle(false);
+        fresh.burstDelay   = 0;
+        fresh.burstDuration = 0.001;   // skip burst, straight to cruise
+        Object.assign(p, fresh);
+        p.timeAlive = 1;               // past delay
+        continue;
+      }
+
+      draw(p);
+    }
+
+    rafId = requestAnimationFrame(frame);
+  }
+  rafId = requestAnimationFrame(frame);
+
+  return () => {
+    window.removeEventListener("resize", onResize);
+    if (rafId) cancelAnimationFrame(rafId);
+  };
+}
+
+/* =====================================================================
    DESIGN TOKENS
    ===================================================================== */
 const WRAP        = "mx-auto max-w-[1080px] px-4 pt-10 pb-16 sm:px-6 sm:pt-12";
@@ -351,7 +636,6 @@ function gridHTML() {
    VIEWS
    ===================================================================== */
 
-/* ── HOME ──────────────────────────────────────────────────────────── */
 function home() {
   const firstName  = S.user ? S.user.name.split(" ")[0] : null;
   const joinedCount = Object.keys(S.joined).length;
@@ -408,7 +692,6 @@ function home() {
 </div>`;
 }
 
-/* ── EVENTS LIST ───────────────────────────────────────────────────── */
 function events() {
   return `
 <div class="${WRAP}">
@@ -439,7 +722,6 @@ function events() {
 </div>`;
 }
 
-/* ── EVENT DETAIL ──────────────────────────────────────────────────── */
 function detail(e) {
   const joined   = S.joined[e.id];
   const saved    = S.saved.includes(e.id);
@@ -454,11 +736,9 @@ function detail(e) {
         ? `<button class="${btn()}" data-act="join-direct" data-v="${e.id}">Join Event ${icon("arrow-right", { size: 15 })}</button>`
         : `<a class="${btn()}" href="#/join/${e.id}">Join Event ${icon("arrow-right", { size: 15 })}</a>`;
 
-  const note = joined
-    ? `<a class="font-semibold text-ok underline underline-offset-2" href="#/confirmed/${e.id}">Open your ticket</a>`
-    : seats <= 0
-      ? `<span class="text-err font-semibold">No seats remaining.</span>`
-      : "";
+  const note = (!joined && seats <= 0)
+    ? `<span class="text-err font-semibold">No seats remaining.</span>`
+    : "";
 
   const infoRow = (iconName, label, val) => `
 <div class="detail-info-row">
@@ -541,7 +821,6 @@ function detail(e) {
 </div>`;
 }
 
-/* ── JOIN FORM (anonymous only) ────────────────────────────────────── */
 function join(e) {
   return `
 <div class="mx-auto max-w-[1080px] px-4 pt-10 pb-16 sm:px-6 sm:pt-14">
@@ -597,7 +876,6 @@ function join(e) {
 </div>`;
 }
 
-/* ── CONFIRM / TICKET ──────────────────────────────────────────────── */
 function qr(seed) {
   let h = 1;
   for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0;
@@ -613,52 +891,55 @@ function qr(seed) {
       else if (x >= N-7 && y < 7   ) on = finder(x - N + 7, y);
       else if (x < 7    && y >= N-7) on = finder(x, y - N + 7);
       else { r = (r * 1103515245 + 12345) >>> 0; on = (r >> 16) & 1; }
-      if (on) out += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
+      if (on) out += `<rect x="${x}" y="${y}" width="1" height="1" fill="#0a4a2b"/>`;
     }
-  return `<svg class="block rounded-lg bg-white p-2 shadow-sm" width="160" height="160"
-    viewBox="0 0 21 21" role="img" aria-label="Event QR code (mock)" shape-rendering="crispEdges">${out}</svg>`;
+  return `<svg class="qr-svg" viewBox="0 0 21 21" role="img" aria-label="Event QR code (mock)" shape-rendering="crispEdges">${out}</svg>`;
 }
 
 function confirmView(e) {
   const j = S.joined[e.id];
 
   const row = (label, val) => `
-<div class="grid grid-cols-[5rem_minmax(0,1fr)] items-baseline gap-x-2.5 py-0.5 text-[12.5px] sm:text-[13px]">
-  <span class="text-[10px] font-bold uppercase tracking-[.08em] opacity-55">${label}</span>
+<div class="flex flex-wrap items-baseline justify-center gap-x-1.5 py-0.5 text-[12px]
+            sm:grid sm:grid-cols-[5.5rem_minmax(0,1fr)] sm:gap-x-2.5 sm:text-[13.5px]">
+  <span class="text-[9.5px] font-bold uppercase tracking-[.08em] opacity-55 sm:text-[10.5px]">${label}</span>
   <span class="min-w-0 font-medium">${val}</span>
 </div>`;
 
   return `
-<div class="min-h-[calc(100dvh-52px)] flex items-start justify-center py-5 sm:py-6"
-     style="background:linear-gradient(160deg,#062e1a 0%,#0a4a2b 50%,#0e5e33 100%)">
+<div class="relative min-h-[calc(100dvh-52px)] flex items-start justify-center pt-6 pb-4 sm:py-8 overflow-hidden"
+     style="background:linear-gradient(160deg,#041a0e 0%,#063018 50%,#083f22 100%)">
 
-  <div class="mx-auto w-full max-w-[680px] px-4 sm:px-6">
+  <canvas id="confirm-particles" class="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true"></canvas>
 
-    <div class="mb-4 text-center text-white">
-      <div class="mb-2.5 inline-flex h-11 w-11 items-center justify-center rounded-full bg-ok
-                  shadow-[0_0_0_5px_rgba(31,174,58,.22)] reveal">
-        ${icon("check", { size: 20 })}
+  <div class="relative z-10 mx-auto w-full max-w-[340px] px-5 sm:max-w-[720px] sm:px-6">
+
+    <div class="mb-3 text-center text-white sm:mb-5">
+      <div class="mb-2 inline-flex h-16 w-16 items-center justify-center rounded-full bg-ok
+                  shadow-[0_0_0_6px_rgba(31,174,58,.22)] reveal sm:mb-3 sm:h-12 sm:w-12 sm:shadow-[0_0_0_5px_rgba(31,174,58,.22)]">
+        ${icon("check", { size: 26, cls: "sm:!w-[22px] sm:!h-[22px]" })}
       </div>
-      <h1 class="text-[clamp(22px,4vw,30px)] font-extrabold tracking-[-0.04em] leading-[1.1] text-white reveal"
+      <h1 class="text-[clamp(22px,4.4vw,32px)] font-extrabold tracking-[-0.04em] leading-[1.1] text-white reveal"
           style="animation-delay:50ms">
         You're in, ${esc(j.name.split(" ")[0])}!
       </h1>
-      <p class="mt-1 text-[13px] text-white/75 reveal" style="animation-delay:100ms">
+      <p class="mt-1 text-[12.5px] text-white/75 reveal sm:mt-1.5 sm:text-[13.5px]" style="animation-delay:100ms">
         Registered for <strong class="font-semibold text-white">${esc(e.t)}</strong>
       </p>
     </div>
 
-    <div class="ticket-card reveal mb-3 rounded-2xl border border-white/15 bg-white/08 p-4 text-white backdrop-blur-sm sm:p-5"
+    <div class="ticket-card reveal mb-3 rounded-2xl border border-white/15 bg-white/08 p-4 text-white
+                backdrop-blur-xl backdrop-saturate-150 sm:mb-4 sm:p-6"
          style="animation-delay:150ms">
 
-      <div class="grid grid-cols-1 items-center gap-4 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-5">
+      <div class="flex flex-col items-center gap-3 sm:grid sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center sm:gap-6">
 
         <div class="flex items-center justify-center">
           ${qr(e.t + j.sid)}
         </div>
 
-        <div class="flex min-w-0 flex-col">
-          <h2 class="mb-2 text-[19px] font-extrabold leading-[1.15] tracking-[-0.03em] text-white sm:text-[22px]">
+        <div class="flex min-w-0 flex-col text-center sm:text-left">
+          <h2 class="mb-2 text-[18px] font-extrabold leading-[1.15] tracking-[-0.03em] text-white sm:mb-3 sm:text-[24px]">
             ${esc(e.t)}
           </h2>
           <div>
@@ -675,17 +956,20 @@ function confirmView(e) {
         </div>
       </div>
 
-      <div class="mt-4 flex items-center gap-2 rounded-xl border border-ok/30 bg-ok/15
-                  px-3.5 py-2 text-[12.5px] font-semibold">
+      <div class="mt-3 flex items-center justify-center gap-2 rounded-xl border border-ok/30 bg-ok/15
+                  px-3 py-2 text-[12px] font-semibold sm:mt-5 sm:justify-start sm:px-4 sm:py-2.5 sm:text-[13px]">
         ${icon("check-circle", { size: 14, cls: "text-ok shrink-0" })}
         Registration confirmed &mdash; Status: Going
       </div>
     </div>
 
-    <div class="reveal flex flex-wrap items-center justify-between gap-3" style="animation-delay:200ms">
-      <label class="inline-flex cursor-pointer items-center gap-2.5 rounded-xl border
-                    border-white/15 bg-white/06 px-3.5 py-2.5 text-[13px] text-white
-                    hover:bg-white/12 transition-all whitespace-nowrap">
+    <div class="reveal flex flex-col items-stretch gap-2.5
+                sm:flex-row sm:items-center sm:justify-between sm:gap-3"
+         style="animation-delay:200ms">
+      <label class="inline-flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-xl border
+                    border-white/15 bg-white/06 px-3.5 py-2.5 text-[12.5px] text-white
+                    hover:bg-white/12 transition-all whitespace-nowrap backdrop-blur-md
+                    sm:w-auto sm:justify-start sm:px-4 sm:py-2.5 sm:text-[13.5px]">
         <input type="checkbox" data-act="remind" data-v="${e.id}"${j.rem ? " checked" : ""}
                class="h-4 w-4 accent-ok rounded" />
         <span class="flex items-center gap-1.5">
@@ -693,9 +977,9 @@ function confirmView(e) {
         </span>
       </label>
 
-      <div class="flex gap-2">
-        <a class="${btn("ow")}" href="#/">Home</a>
-        <a class="${btn("p")}"  href="#/events">Events</a>
+      <div class="flex w-full gap-2 sm:w-auto">
+        <a class="${btn("ow")} flex-1 sm:flex-initial" href="#/">Home</a>
+        <a class="${btn("p")}  flex-1 sm:flex-initial" href="#/my-events">My Events</a>
       </div>
     </div>
 
@@ -703,7 +987,6 @@ function confirmView(e) {
 </div>`;
 }
 
-/* ── MY EVENTS ─────────────────────────────────────────────────────── */
 function mine() {
   const jl   = EV.filter((e) => S.joined[e.id]);
   const sl   = EV.filter((e) => S.saved.includes(e.id));
@@ -791,15 +1074,14 @@ function mine() {
   </div>
 
   <div class="mt-8 flex flex-wrap gap-3 reveal justify-end">
-    <a class="${btn("o")}" href="#/events">
+    <a class="${btn("o")}" href="#/">Home</a>
+    <a class="${btn("o")} btn-events" href="#/events">
       ${icon("arrow-left", { size: 15 })} Events
     </a>
-    <a class="${btn("o")}" href="#/">Home</a>
   </div>
 </div>`;
 }
 
-/* ── PROFILE ───────────────────────────────────────────────────────── */
 function profile() {
   if (S.user)
     return `
@@ -913,6 +1195,9 @@ function render() {
   const doAnimate = shouldAnimate;
   shouldAnimate = false;
 
+  // Hide the footer on the confirmation page so its gradient fills the viewport
+  document.body.classList.toggle("confirm-view", c.v === "confirm");
+
   app.classList.toggle("reveal-instant", !doAnimate);
   if (doAnimate) animateView();
 
@@ -921,6 +1206,10 @@ function render() {
   requestAnimationFrame(() => {
     renderIcons();
     if (doAnimate) initReveal();
+
+    // Particles live only on the confirmation page
+    stopConfirmationParticles();
+    if (c.v === "confirm") particleCleanup = startConfirmationParticles();
   });
 
   const active =
@@ -959,9 +1248,9 @@ function render() {
   }
 
   renderIcons();
+  updateThemeIcon();
 }
 
-/* ── Route ── */
 function route() {
   const p    = (location.hash.slice(1) || "/").split("/");
   const path = "/" + (p[1] || "");
@@ -1207,4 +1496,8 @@ document.addEventListener("submit", (e) => {
    BOOT
    ===================================================================== */
 document.getElementById("nav-toggle")?.addEventListener("click", toggleMobileNav);
+document.getElementById("theme-toggle")?.addEventListener("click", toggleTheme);
+
+initTheme();
+initBackgrounds();
 route();

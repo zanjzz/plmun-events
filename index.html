@@ -66,68 +66,62 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
 
-  <body class="bg-cream font-sans text-[15px] leading-relaxed text-neutral-900 antialiased">
+ <body class="font-sans text-[15px] leading-relaxed text-neutral-900 antialiased">
 
-    <!-- ── NAV ─────────────────────────────────────────────────────── -->
-      <header class="sticky top-[env(safe-area-inset-top,0px)] z-30 bg-g text-white">
-      <div class="mx-auto flex max-w-[1080px] items-center justify-between gap-4 px-4 py-3 sm:px-6">
+  <!-- Animated backgrounds (fixed, painted behind everything) -->
+  <div id="vanta-bg" class="bg-layer" aria-hidden="true"></div>
+  <div id="aura-bg"  class="bg-layer" aria-hidden="true">
+    <div data-us-project="yaha7Bz5f3cRBAa5js9K"></div>
+  </div>
 
-        <a href="#/"
-          class="flex items-center gap-2.5 text-[14.5px] font-semibold tracking-tight transition-opacity hover:opacity-80"
-          aria-label="PLMUN Campus Events — Home">
-          <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white/15">
-            <i data-lucide="landmark" class="h-4 w-4"></i>
-          </span>
-          <span class="hidden sm:inline">PLMUN <span class="font-normal opacity-70">Campus Events</span></span>
-          <span class="sm:hidden opacity-70">PLMUN</span>
-        </a>
+  <header class="sticky top-[env(safe-area-inset-top,0px)] z-30 bg-g text-white">
+    <div class="mx-auto flex max-w-[1080px] items-center gap-4 px-4 py-3 sm:px-6">
+      <a href="#/"
+        class="flex items-center gap-2.5 text-[14.5px] font-semibold tracking-tight transition-opacity hover:opacity-80"
+        aria-label="PLMUN Campus Events — Home">
+        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white/15">
+          <i data-lucide="landmark" class="h-4 w-4"></i>
+        </span>
+        <span class="hidden sm:inline">PLMUN <span class="font-normal opacity-70">Campus Events</span></span>
+        <span class="sm:hidden opacity-70">PLMUN</span>
+      </a>
 
+      <div class="ml-auto flex items-center gap-2">
         <nav id="nav" class="hidden items-center gap-0.5 md:flex" aria-label="Main navigation"></nav>
 
-        <button
-          id="nav-toggle"
-          type="button"
+        <button id="theme-toggle" type="button"
+          class="flex h-9 w-9 items-center justify-center rounded-lg transition hover:bg-white/10 active:bg-white/15"
+          aria-label="Toggle light or dark mode" title="Toggle theme">
+          <i data-lucide="moon" class="h-5 w-5"></i>
+        </button>
+
+        <button id="nav-toggle" type="button"
           class="flex h-9 w-9 items-center justify-center rounded-lg transition hover:bg-white/10 active:bg-white/15 md:hidden"
-          aria-label="Toggle navigation menu"
-          aria-expanded="false"
-          aria-controls="nav-mobile"
-        >
+          aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-mobile">
           <i data-lucide="menu" class="h-5 w-5"></i>
         </button>
       </div>
+    </div>
 
-      <!-- Floating mobile dropdown (absolute → does NOT push the page) -->
-      <div
-        id="nav-mobile"
-        class="absolute left-0 right-0 top-full hidden border-t border-white/10 bg-g-d px-3 pb-3 pt-2 shadow-2xl md:hidden"
-        aria-label="Mobile navigation"
-      ></div>
-    </header>
+    <div id="nav-mobile"
+      class="absolute left-0 right-0 top-full hidden border-t border-white/10 bg-g-d px-3 pb-3 pt-2 shadow-2xl md:hidden"
+      aria-label="Mobile navigation"></div>
+  </header>
 
-    <!-- ── MAIN CONTENT ────────────────────────────────────────────── -->
-    <main id="app" class="min-h-[calc(100dvh-56px)]"></main>
+  <main id="app" class="relative min-h-[calc(100dvh-56px)]"></main>
 
-    <!-- ── FOOTER ──────────────────────────────────────────────────── -->
-    <footer class="border-t border-g/10 bg-white/50 py-8 text-center text-xs text-mut">
-      <div class="mx-auto max-w-[1080px] px-4">
-        <p class="font-semibold tracking-tight text-g">PLMUN Campus Events</p>
-        <p class="mt-1 opacity-60">Pamantasan ng Lungsod ng Muntinlupa &middot; Student Affairs Office</p>
-        <p class="mt-2 opacity-40">&copy; <span id="yr"></span> All rights reserved.</p>
-      </div>
-    </footer>
+  <footer class="mt-12 border-t border-g/10 bg-white/50 pt-14 pb-12 text-center text-xs text-mut sm:mt-16 sm:pt-16 sm:pb-14">
+    <div class="mx-auto max-w-[1080px] px-4">
+      <p class="font-semibold tracking-tight text-g">PLMUN Campus Events</p>
+      <p class="mt-1 opacity-60">Pamantasan ng Lungsod ng Muntinlupa &middot; Student Affairs Office</p>
+      <p class="mt-2 opacity-40">&copy; <span id="yr"></span> All rights reserved.</p>
+    </div>
+  </footer>
 
-    <!-- ── TOAST ───────────────────────────────────────────────────── -->
-    <div
-      id="toast"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="fixed bottom-[calc(24px+env(safe-area-inset-bottom,0px))] left-1/2 z-[9999] flex items-center gap-2.5 rounded-xl bg-neutral-900 px-4 py-2.5 text-[13.5px] font-medium text-white shadow-2xl"
-    ></div>
+  <div id="toast" role="status" aria-live="polite" aria-atomic="true"
+    class="fixed bottom-[calc(24px+env(safe-area-inset-bottom,0px))] left-1/2 z-[9999] flex items-center gap-2.5 rounded-xl bg-neutral-900 px-4 py-2.5 text-[13.5px] font-medium text-white shadow-2xl"></div>
 
-    <script src="app.js"></script>
-    <script>
-      document.getElementById("yr").textContent = new Date().getFullYear();
-    </script>
-  </body>
+  <script src="app.js"></script>
+  <script>document.getElementById("yr").textContent = new Date().getFullYear();</script>
+</body>
 </html>
