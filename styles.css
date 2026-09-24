@@ -456,7 +456,7 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
-  padding: 1.25rem 1.25rem 1.35rem;   /* ← more breathing room on mobile */
+  padding: 1.25rem 1.25rem 1.35rem;
   align-items: center;
   border-radius: 1rem;
 }
@@ -505,12 +505,19 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
   .me-title { font-size: 1.3rem; }
 }
 
-/* Meta grid — 2 cols, no labels */
+/* Meta — STACKED on mobile, 2-col grid on desktop */
 .me-meta {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: .75rem 1rem;   /* ← a little more vertical breathing room */
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
   margin-top: .85rem;
+}
+@media (min-width: 640px) {
+  .me-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .75rem 1rem;
+  }
 }
 .me-meta-item { min-width: 0; }
 
@@ -550,7 +557,7 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
   gap: .55rem;
   width: 100%;
   margin-left: auto;
-  margin-top: .25rem;   /* ← small buffer between content and buttons */
+  margin-top: .25rem;
 }
 .me-actions > * {
   width: 100% !important;
