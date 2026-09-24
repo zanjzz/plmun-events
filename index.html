@@ -69,15 +69,12 @@
   <body class="bg-cream font-sans text-[15px] leading-relaxed text-neutral-900 antialiased">
 
     <!-- ── NAV ─────────────────────────────────────────────────────── -->
-   <header class="sticky top-[env(safe-area-inset-top,0px)] z-30 bg-g text-white">
+      <header class="sticky top-[env(safe-area-inset-top,0px)] z-30 bg-g text-white">
       <div class="mx-auto flex max-w-[1080px] items-center justify-between gap-4 px-4 py-3 sm:px-6">
 
-        <!-- Logo -->
-        <a
-          href="#/"
+        <a href="#/"
           class="flex items-center gap-2.5 text-[14.5px] font-semibold tracking-tight transition-opacity hover:opacity-80"
-          aria-label="PLMUN Campus Events — Home"
-        >
+          aria-label="PLMUN Campus Events — Home">
           <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white/15">
             <i data-lucide="landmark" class="h-4 w-4"></i>
           </span>
@@ -85,10 +82,8 @@
           <span class="sm:hidden opacity-70">PLMUN</span>
         </a>
 
-        <!-- Desktop nav -->
         <nav id="nav" class="hidden items-center gap-0.5 md:flex" aria-label="Main navigation"></nav>
 
-        <!-- Mobile hamburger -->
         <button
           id="nav-toggle"
           type="button"
@@ -101,10 +96,10 @@
         </button>
       </div>
 
-      <!-- Mobile dropdown -->
+      <!-- Floating mobile dropdown (absolute → does NOT push the page) -->
       <div
         id="nav-mobile"
-        class="hidden border-t border-white/10 bg-g-d px-3 pb-3 pt-2 md:hidden"
+        class="absolute left-0 right-0 top-full hidden border-t border-white/10 bg-g-d px-3 pb-3 pt-2 shadow-2xl md:hidden"
         aria-label="Mobile navigation"
       ></div>
     </header>

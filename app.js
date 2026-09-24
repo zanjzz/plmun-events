@@ -110,7 +110,6 @@ try {
     S = { ...S, ...stored };
     if (!S.accounts) S.accounts = {};
     if (!S.acct)     S.acct = {};
-    /* Migration from old single-user format */
     if (S.user && !S.accounts[S.user.email]) {
       S.accounts[S.user.email] = { joined: S.joined || {}, saved: S.saved || [] };
     }
@@ -118,15 +117,12 @@ try {
 } catch (_) {}
 
 const save = () => {
-  /* Keep the account bucket in sync with the live session */
   if (S.user) S.accounts[S.user.email] = { joined: S.joined, saved: S.saved };
   try { localStorage.setItem("plmun", JSON.stringify(S)); } catch (_) {}
 };
 
-/* Adopt / create an account, merging current anonymous state in */
 function adoptAccount(email, name) {
   const bucket = S.accounts[email] || { joined: {}, saved: [] };
-  /* Merge current (anonymous or previous) session into the account */
   Object.assign(bucket.joined, S.joined);
   bucket.saved = Array.from(new Set([...bucket.saved, ...S.saved]));
   S.accounts[email] = bucket;
@@ -278,76 +274,48 @@ function status(e) {
 
 /* =====================================================================
    CARD
-   Taller thumb, aligned meta grid, clamped summary, subtle hover accent.
    ===================================================================== */
 const card = (e) => `
-<a href="#/event/${e.id}" aria-label="View ${esc(e.t)}"
-   class="event-card group flex h-full flex-col rounded-card bg-g text-white">
+<a href="#/event/${e.id}" aria-label="View ${esc(e.t)}" class="event-card">
 
-  <!-- Thumb -->
-  <div class="card-thumb relative m-2 h-44 shrink-0 overflow-hidden rounded-[.75rem] sm:h-40"
-       style="background:${e.g}">
-    ${thumb(e)}
+  ${e.online
+    ? `<span class="event-card__badge event-card__badge--online">${icon("video", { size: 10 })} Online</span>`
+    : e.w
+      ? `<span class="event-card__badge">${icon("sparkles", { size: 10 })} Featured</span>`
+      : ""}
 
-    <!-- subtle bottom scrim for depth -->
-    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-14
-                bg-gradient-to-t from-black/35 via-black/10 to-transparent"></div>
+  <div class="event-card__content">
 
-    <!-- category (top-left) -->
-    <span class="absolute left-2.5 top-2.5 inline-flex items-center gap-1.5 rounded-full
-                 bg-black/45 px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide
-                 text-white/95 backdrop-blur-md ring-1 ring-white/10">
-      ${icon(CAT_ICON[e.c] || "calendar", { size: 10 })}
-      ${esc(e.c)}
-    </span>
-
-    ${e.online ? `
-    <span class="absolute right-2.5 top-2.5 inline-flex items-center gap-1 rounded-full
-                 bg-sky-500/90 px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide
-                 text-white backdrop-blur-md ring-1 ring-white/15">
-      ${icon("video", { size: 10 })} Online
-    </span>` : ""}
-  </div>
-
-  <!-- Body -->
-  <div class="flex min-w-0 flex-1 flex-col px-4 pt-3 pb-4">
-
-    <!-- Title + arrow -->
-    <div class="flex items-start justify-between gap-2.5">
-      <h3 class="flex-1 text-[16px] font-extrabold leading-[1.25] tracking-[-0.025em] line-clamp-2">${esc(e.t)}</h3>
-      <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full
-                   bg-white/[.07] transition-colors duration-200 group-hover:bg-white/[.16]">
-        ${icon("arrow-up-right", { size: 13 })}
+    <div class="event-card__image" style="background:${e.g}">
+      ${thumb(e)}
+      <span class="event-card__image-label">
+        ${icon(CAT_ICON[e.c] || "calendar", { size: 10 })}
+        ${esc(e.c)}
       </span>
     </div>
 
-    <!-- Organizer -->
-    <p class="mt-1 truncate text-[12px] font-medium opacity-55">${esc(e.o)}</p>
+    <div class="event-card__text">
+      <h3 class="event-card__title">${esc(e.t)}</h3>
+      <p class="event-card__subtitle">by ${esc(e.o)}</p>
+      <p class="event-card__description">${esc(e.s)}</p>
+    </div>
 
-    <!-- Summary — always reserves 2 lines so footers align across cards -->
-    <p class="mt-3 line-clamp-2 min-h-[39px] text-[12.5px] leading-[1.55] opacity-70">${esc(e.s)}</p>
-
-    <!-- Meta group — pushed to bottom so all cards' footers align -->
-    <div class="mt-auto pt-4">
-
-      <!-- Grid keeps icon + text aligned across both rows -->
-      <div class="grid grid-cols-[14px_minmax(0,1fr)] items-center gap-x-2.5 gap-y-2
-                  text-[11.5px] font-medium opacity-70">
-        <span class="flex justify-center">${icon("calendar", { size: 12 })}</span>
-        <span class="truncate">${e.day}, ${e.md}</span>
-
-        <span class="flex justify-center">${icon("map-pin", { size: 12 })}</span>
-        <span class="truncate">${esc(e.loc)}</span>
+    <div class="event-card__meta">
+      <div class="event-card__meta-item">
+        <span class="event-card__meta-label">Date</span>
+        <span class="event-card__meta-value">${e.day}, ${e.md}</span>
       </div>
-
-      <!-- Footer -->
-      <div class="mt-3.5 flex items-center justify-between border-t border-white/10 pt-3.5">
-        ${status(e)}
-        <span class="flex items-center gap-1 text-[11.5px] font-semibold opacity-60
-                     transition-opacity duration-200 group-hover:opacity-100">
-          View ${icon("chevron-right", { size: 12 })}
-        </span>
+      <div class="event-card__meta-item">
+        <span class="event-card__meta-label">Location</span>
+        <span class="event-card__meta-value">${esc(e.loc)}</span>
       </div>
+    </div>
+
+    <div class="event-card__footer">
+      <div class="event-card__price">${status(e)}</div>
+      <span class="event-card__button" aria-hidden="true">
+        ${icon("arrow-right", { size: 14 })}
+      </span>
     </div>
   </div>
 </a>`;
@@ -432,7 +400,7 @@ function home() {
     ${EV.filter(e => e.w).map(card).join("")}
   </div>
 
-  <div class="mt-8 reveal">
+  <div class="mt-8 flex justify-end reveal">
     <a class="${btn("o")}" href="#/events">
       View all events ${icon("arrow-right", { size: 15 })}
     </a>
@@ -490,9 +458,7 @@ function detail(e) {
     ? `<a class="font-semibold text-ok underline underline-offset-2" href="#/confirmed/${e.id}">Open your ticket</a>`
     : seats <= 0
       ? `<span class="text-err font-semibold">No seats remaining.</span>`
-      : S.user
-        ? `<span class="text-mut">${seats} of ${e.n} seats remaining &middot; one-click registration</span>`
-        : `<span class="text-mut">${seats} of ${e.n} seats remaining</span>`;
+      : "";
 
   const infoRow = (iconName, label, val) => `
 <div class="detail-info-row">
@@ -563,13 +529,13 @@ function detail(e) {
         ${infoRow("building-2", "Organized by", esc(e.o))}
       </div>
 
-      <div class="flex flex-wrap gap-3">
+      <div class="flex flex-wrap justify-end gap-3">
         <button class="${btn("o")}" data-act="save" data-v="${e.id}" aria-pressed="${saved}">
           ${saved ? `${icon("bookmark-check", { size: 15 })} Saved` : `${icon("bookmark", { size: 15 })} Save`}
         </button>
         ${mainAction}
       </div>
-      <p class="mt-2.5 min-h-5 text-[13px]">${note}</p>
+      ${note ? `<p class="mt-2.5 min-h-5 text-right text-[13px]">${note}</p>` : ""}
     </div>
   </div>
 </div>`;
@@ -984,9 +950,7 @@ function render() {
   const mn = document.getElementById("nav-mobile");
   if (mn) {
     mn.innerHTML = navLinks.map(([k, url, label]) =>
-      `<a href="${url}"
-          class="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[14px] font-medium transition
-                 ${k === active ? "bg-white/15 text-white" : "text-white/80 hover:bg-white/10"}">
+      `<a href="${url}" ${k === active ? 'aria-current="page"' : ""}>
          ${icon(NAV_ICONS[k], { size: 15 })}
          <span>${label}</span>
        </a>`
@@ -1106,7 +1070,6 @@ document.addEventListener("click", (e) => {
     go("#/confirmed/" + evt.id);
   }
   else if (a === "logout") {
-    /* Park current session into the account bucket, then reset the session */
     if (S.user) S.accounts[S.user.email] = { joined: S.joined, saved: S.saved };
     S.user   = null;
     S.joined = {};
@@ -1125,7 +1088,6 @@ document.addEventListener("submit", (e) => {
   F.fe = fe;
   const isMail = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s || "");
 
-  /* ── join (anonymous registration + event registration) ── */
   if (formType === "join") {
     const evt = ev(cur.id);
 
@@ -1163,7 +1125,6 @@ document.addEventListener("submit", (e) => {
     render(); return;
   }
 
-  /* ── login ── */
   if (formType === "login") {
     if (!(F.email || "").trim() || !F.pw) {
       F.err = "Please enter your email and password.";
@@ -1183,7 +1144,6 @@ document.addEventListener("submit", (e) => {
     render(); return;
   }
 
-  /* ── register (from profile) ── */
   if (formType === "reg") {
     ["email", "fn", "pw", "pw2"].forEach((x) => { if (!(F[x] || "").trim()) fe[x] = 1; });
 
@@ -1205,6 +1165,42 @@ document.addEventListener("submit", (e) => {
     render();
   }
 });
+
+/* =====================================================================
+   NAV — auto-hide on scroll down, reveal on scroll up
+   ===================================================================== */
+(function initAutoHideNav() {
+  const header = document.querySelector("header");
+  if (!header) return;
+
+  let lastY   = window.scrollY;
+  let hidden  = false;
+  const THRESHOLD = 6;
+  const TOP_ZONE  = 40;
+
+  window.addEventListener("scroll", () => {
+    const y = window.scrollY;
+
+    if (y <= TOP_ZONE) {
+      if (hidden) { header.classList.remove("nav-hidden"); hidden = false; }
+      lastY = y;
+      return;
+    }
+
+    if (Math.abs(y - lastY) < THRESHOLD) return;
+
+    if (y > lastY && !hidden) {
+      const mn = document.getElementById("nav-mobile");
+      if (mn && !mn.classList.contains("hidden")) { lastY = y; return; }
+      header.classList.add("nav-hidden");
+      hidden = true;
+    } else if (y < lastY && hidden) {
+      header.classList.remove("nav-hidden");
+      hidden = false;
+    }
+    lastY = y;
+  }, { passive: true });
+})();
 
 /* =====================================================================
    BOOT
