@@ -660,16 +660,16 @@ function home() {
     </p>
 
     <div class="flex flex-wrap gap-3 reveal" style="animation-delay:150ms">
+      ${S.user
+        ? `<a class="${btn("ow")}" href="#/my-events">
+            My Events${joinedCount ? ` (${joinedCount})` : ""}
+          </a>`
+        : `<a class="${btn("ow")}" href="#/profile">
+            ${icon("log-in", { size: 15 })} Log in
+          </a>`}
       <a class="${btn("p")}" href="#/events">
         Browse all events ${icon("arrow-right", { size: 15 })}
       </a>
-      ${S.user
-        ? `<a class="${btn("ow")}" href="#/my-events">
-             My Events${joinedCount ? ` (${joinedCount})` : ""}
-           </a>`
-        : `<a class="${btn("ow")}" href="#/profile">
-             ${icon("log-in", { size: 15 })} Log in
-           </a>`}
     </div>
   </div>
 </section>
@@ -1129,10 +1129,10 @@ function profile() {
       ${reg ? "Register with your institutional email." : "Log in to join events and manage your schedule."}
     </p>
 
-    <div class="flex gap-1 rounded-xl border border-g/12 bg-neutral-50 p-1 mb-1">
-      <button type="button" class="${pill(!reg)} flex-1 justify-center text-center"
+    <div class="flex gap-2 mb-5">
+      <button type="button" class="${pill(!reg)} flex-1 justify-center text-center py-2"
               data-act="auth" data-v="login">Sign in</button>
-      <button type="button" class="${pill(reg)} flex-1 justify-center text-center"
+      <button type="button" class="${pill(reg)} flex-1 justify-center text-center py-2"
               data-act="auth" data-v="reg">Register</button>
     </div>
 
@@ -1148,7 +1148,7 @@ function profile() {
     <label class="${LBL}" for="pw">Password</label>
     <input class="${INPUT}" type="password" id="pw" data-f="pw" ${inv("pw")}
            value="${esc(F.pw ?? "")}"
-           placeholder="${reg ? "Minimum 8 characters" : "Any password works in this demo"}" />
+           placeholder="${reg ? "Minimum 8 characters" : "Enter your password"}" />
 
     ${reg ? `
     <label class="${LBL}" for="pw2">Confirm password</label>
