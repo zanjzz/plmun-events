@@ -216,7 +216,6 @@ function toggleMobileNav() {
 const WRAP        = "mx-auto max-w-[1080px] px-4 pt-10 pb-16 sm:px-6 sm:pt-12";
 const WRAP_DETAIL = "mx-auto max-w-[1080px] px-4 pt-6 pb-16 sm:px-6 sm:pt-8";
 
-/* Mobile: narrower card, taller feel. sm+: auto-fill grid. */
 const GRID  = "mt-6 grid grid-cols-1 gap-4 mx-auto max-w-[340px] sm:max-w-none sm:grid-cols-[repeat(auto-fill,minmax(260px,1fr))] sm:gap-5";
 
 const H1  = "mb-3 text-[clamp(30px,5vw,52px)] font-extrabold leading-[1.03] tracking-[-0.045em] text-g";
@@ -713,49 +712,47 @@ function mine() {
   const row = (e) => {
     const j = S.joined[e.id], asking = askCancel === e.id;
 
-    /* Always exactly 2 buttons — they swap roles when confirming cancel. */
-    const action = j
-      ? asking
-        ? /* Confirming: [Keep it] [Yes, cancel] */
-          `<button class="${btn("ow", true)}" data-act="cancelno">Keep it</button>
-           <button class="${btn("x", true)}" data-act="cancelyes" data-v="${e.id}">Yes, cancel</button>`
-        : /* Default joined: [View details] [Cancel] */
-          `<a class="${btn("p", true)}" href="#/event/${e.id}">View details</a>
-           <button class="${btn("ow", true)}" data-act="cancelask" data-v="${e.id}">Cancel</button>`
-      : /* Saved: [View details] [Remove] */
-        `<a class="${btn("p", true)}" href="#/event/${e.id}">View details</a>
-         <button class="${btn("ow", true)}" data-act="save" data-v="${e.id}">Remove</button>`;
+    const b1 = (j && asking)
+      ? `<button class="${btn("ow")} me-btn" data-act="cancelno">Keep it</button>`
+      : `<a class="${btn("p")} me-btn" href="#/event/${e.id}">View details</a>`;
+
+    const b2 = (j && asking)
+      ? `<button class="${btn("x")} me-btn" data-act="cancelyes" data-v="${e.id}">Yes, cancel</button>`
+      : j
+        ? `<button class="${btn("ow")} me-btn" data-act="cancelask" data-v="${e.id}">Cancel</button>`
+        : `<button class="${btn("ow")} me-btn" data-act="save" data-v="${e.id}">Remove</button>`;
 
     return `
-<div class="event-card mt-4 grid grid-cols-1 items-center gap-4 rounded-2xl bg-g p-3.5 text-white
-            sm:grid-cols-[136px_minmax(0,1fr)_auto] sm:gap-5">
+<div class="event-card me-row">
 
-  <div class="card-thumb relative h-28 w-full overflow-hidden rounded-xl sm:w-auto"
-       style="background:${e.g}">
+  <div class="me-row__thumb" style="background:${e.g}">
     ${thumb(e)}
   </div>
 
-  <div class="min-w-0">
-    <h3 class="mb-0.5 truncate text-[17px] font-bold tracking-[-0.02em]">${esc(e.t)}</h3>
-    <div class="mt-1 space-y-0.5">
-      <p class="flex items-center gap-1.5 text-[12.5px] opacity-65">
-        ${icon("calendar", { size: 11 })} ${e.full}
-      </p>
-      <p class="flex items-center gap-1.5 text-[12.5px] opacity-65">
-        ${icon("clock",    { size: 11 })} ${e.time}
-      </p>
-      <p class="flex items-center gap-1.5 text-[12.5px] opacity-65">
-        ${icon(e.online ? "video" : "map-pin", { size: 11 })} ${esc(e.loc)} &middot; ${e.c}
-      </p>
-    </div>
-    <div class="mt-2.5">
-      ${j ? badge(`${icon("check", { size: 10 })} Going`, "badge-joined bg-ok text-white")
-          : status(e)}
+  <div class="me-row__body">
+    <h3 class="me-title">${esc(e.t)}</h3>
+
+    <div class="me-meta">
+      <div class="me-meta-item">
+        <span class="me-meta-value">${icon("calendar", { size: 11 })} ${e.full}</span>
+      </div>
+      <div class="me-meta-item">
+        <span class="me-meta-value">${icon("clock", { size: 11 })} ${e.time}</span>
+      </div>
+      <div class="me-meta-item">
+        <span class="me-meta-value">${icon(e.online ? "video" : "map-pin", { size: 11 })} ${esc(e.loc)} &middot; ${e.c}</span>
+      </div>
+
+      <div class="me-status-cell">
+        ${j ? badge(`${icon("check", { size: 10 })} Going`, "badge-joined bg-ok text-white")
+            : status(e)}
+      </div>
     </div>
   </div>
 
-  <div class="flex flex-row items-stretch gap-2 sm:flex-col [&>*]:flex-1 sm:[&>*]:flex-none sm:[&>*]:w-[152px]">
-    ${action}
+  <div class="me-actions">
+    ${b1}
+    ${b2}
   </div>
 </div>`;
   };
@@ -780,7 +777,7 @@ function mine() {
     </button>
   </div>
 
-  <div class="reveal-stagger">
+  <div class="mt-6 reveal-stagger flex flex-col gap-4">
     ${list.length
       ? list.map(row).join("")
       : `<div class="${EMPTY}">
@@ -793,7 +790,7 @@ function mine() {
          </div>`}
   </div>
 
-  <div class="mt-8 flex flex-wrap gap-3 reveal">
+  <div class="mt-8 flex flex-wrap gap-3 reveal justify-end">
     <a class="${btn("o")}" href="#/events">
       ${icon("arrow-left", { size: 15 })} Events
     </a>
