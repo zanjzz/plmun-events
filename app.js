@@ -992,18 +992,24 @@ function mine() {
   const sl   = EV.filter((e) => S.saved.includes(e.id));
   const list = tab === "joined" ? jl : sl;
 
-  const row = (e) => {
+    const row = (e) => {
     const j = S.joined[e.id], asking = askCancel === e.id;
+    const inSavedTab = tab === "saved";
 
-    const b1 = (j && asking)
+    const b1 = (j && asking && !inSavedTab)
       ? `<button class="${btn("ow")} me-btn" data-act="cancelno">Keep it</button>`
       : `<a class="${btn("p")} me-btn" href="#/event/${e.id}">View details</a>`;
 
-    const b2 = (j && asking)
-      ? `<button class="${btn("x")} me-btn" data-act="cancelyes" data-v="${e.id}">Yes, cancel</button>`
-      : j
-        ? `<button class="${btn("ow")} me-btn" data-act="cancelask" data-v="${e.id}">Cancel</button>`
-        : `<button class="${btn("ow")} me-btn" data-act="save" data-v="${e.id}">Remove</button>`;
+    let b2;
+    if (inSavedTab) {
+      b2 = `<button class="${btn("ow")} me-btn" data-act="save" data-v="${e.id}">Remove</button>`;
+    } else if (j && asking) {
+      b2 = `<button class="${btn("x")} me-btn" data-act="cancelyes" data-v="${e.id}">Yes, cancel</button>`;
+    } else if (j) {
+      b2 = `<button class="${btn("ow")} me-btn" data-act="cancelask" data-v="${e.id}">Cancel</button>`;
+    } else {
+      b2 = `<button class="${btn("ow")} me-btn" data-act="save" data-v="${e.id}">Remove</button>`;
+    }
 
     return `
 <div class="event-card me-row">

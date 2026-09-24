@@ -117,7 +117,7 @@ header.nav-hidden { transform: translateY(-100%); }
 
 /* event card */
 .event-card {
-  --card-accent: #7dd3a0;
+  --card-accent: #8cc6a3;
   --card-shadow: 0 1px 3px rgba(10,74,43,.07), 0 4px 14px -4px rgba(10,74,43,.10);
   --card-shadow-hover: 0 20px 25px -5px rgba(10,74,43,.22), 0 10px 10px -5px rgba(10,74,43,.12);
 
@@ -138,7 +138,7 @@ header.nav-hidden { transform: translateY(-100%); }
 .event-card:hover {
   transform: translateY(-10px);
   box-shadow: var(--card-shadow-hover);
-  border-color: rgba(125,211,160,.28);
+  border-color: rgba(140,198,163,.28);
 }
 .event-card:active { transform: translateY(-5px) scale(.985); }
 
@@ -406,6 +406,19 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
               border-color 140ms var(--ease), box-shadow 140ms var(--ease);
 }
 
+/* active pill — light green tint instead of dark green */
+html:not(.dark) .cat-pill.bg-g {
+  background-color: #d6f0e0 !important;
+  border-color: rgba(10,74,43,.35) !important;
+  color: #0a4a2b !important;
+  box-shadow: 0 1px 2px rgba(10,74,43,.08);
+  font-weight: 600;
+}
+html:not(.dark) .cat-pill.bg-g:hover {
+  background-color: #c5e7d3 !important;
+  border-color: #0a4a2b !important;
+}
+
 /* detail page info rows */
 .detail-info-row {
   display: grid;
@@ -428,7 +441,7 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
   pointer-events: none; border-radius: inherit;
 }
 
-/* qr code — always white so it stays scannable; smaller on mobile so the whole ticket fits without scrolling */
+/* qr code — always white so it stays scannable; smaller on mobile */
 .qr-svg {
   background-color: #ffffff;
   border-radius: .5rem;
@@ -445,7 +458,6 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
   }
 }
 .qr-svg rect { fill: #0a4a2b; }
-
 
 /* skeleton */
 .skeleton {
@@ -571,7 +583,7 @@ input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(10,74,43,.22);
 
 /* animated backgrounds */
 html:not(.dark) { background-color: #fff7e6; }
-html.dark       { background-color: #08170f; }
+html.dark       { background-color: #0a1a13; }
 body            { background-color: transparent; }
 
 .bg-layer {
@@ -608,10 +620,14 @@ html.dark .bg-layer::after {
   position: absolute; inset: 0;
   pointer-events: none;
   background: radial-gradient(120% 90% at 50% 0%,
-    rgba(8,23,15,.20) 0%,
-    rgba(8,23,15,.48) 55%,
-    rgba(8,23,15,.78) 100%);
+    rgba(10,26,19,.20) 0%,
+    rgba(10,26,19,.48) 55%,
+    rgba(10,26,19,.78) 100%);
 }
+
+/* confirmation page — footer hidden, gradient fills full viewport */
+body.confirm-view footer { display: none; }
+body.confirm-view        { background-color: #041a0e; }
 
 /* dark mode */
 html.dark { color-scheme: dark; }
@@ -624,47 +640,46 @@ html.dark .bg-neutral-50      { background-color: #0e1a13 !important; }
 html.dark .bg-g-l:not(.btn-base):not(.cat-pill) { background-color: rgba(125,211,160,.10) !important; }
 html.dark .bg-red-50          { background-color: rgba(179,38,30,.15)  !important; }
 
-/* neon-green lift for nav + cards */
+/* muted green lift for nav + cards */
 html.dark header {
-  background-color: #0d8a4e !important;
-  box-shadow: 0 2px 14px -6px rgba(74,222,128,.32);
+  background-color: #0e6a42 !important;
+  box-shadow: 0 2px 14px -6px rgba(74,222,128,.20);
 }
 html.dark #nav-mobile {
-  background-color: #0a6a3a !important;
+  background-color: #0a5232 !important;
 }
 html.dark .event-card {
-  background: linear-gradient(160deg, #0d8a4e 0%, #086139 100%) !important;
-  border-color: rgba(125,211,160,.30) !important;
+  background: linear-gradient(160deg, #0e6a42 0%, #083a24 100%) !important;
+  border-color: rgba(125,211,160,.22) !important;
   box-shadow:
-    0 0 0 1px rgba(125,211,160,.08),
-    0 4px 22px -6px rgba(125,211,160,.16),
+    0 0 0 1px rgba(125,211,160,.06),
+    0 4px 22px -6px rgba(125,211,160,.10),
     0 1px 3px rgba(0,0,0,.45) !important;
 }
 html.dark .event-card:hover {
   box-shadow:
-    0 0 0 1px rgba(125,211,160,.16),
+    0 0 0 1px rgba(125,211,160,.12),
     0 20px 25px -5px rgba(0,0,0,.5),
     0 10px 10px -5px rgba(0,0,0,.3) !important;
-  border-color: rgba(125,211,160,.5) !important;
+  border-color: rgba(125,211,160,.38) !important;
 }
 html.dark .ticket-card {
-  background-color: rgba(13,138,78,.5) !important;
-  border-color: rgba(125,211,160,.32) !important;
+  background-color: rgba(14,106,66,.45) !important;
+  border-color: rgba(125,211,160,.26) !important;
 }
 
 /* borders */
 html.dark .border-g\/10,
 html.dark .border-g\/12,
-html.dark .border-g\/08 { border-color: rgba(125,211,160,.18) !important; }
-html.dark .border-g\/25 { border-color: rgba(125,211,160,.34) !important; }
+html.dark .border-g\/08 { border-color: rgba(125,211,160,.14) !important; }
+html.dark .border-g\/25 { border-color: rgba(125,211,160,.26) !important; }
 
-/* text */
+/* text — pure white titles, no green tint */
 html.dark .text-neutral-900 { color: #e2ece6 !important; }
 html.dark .text-neutral-800 { color: #cfe0d6 !important; }
 html.dark .text-neutral-600 { color: #b9c9c0 !important; }
 html.dark .text-neutral-400 { color: #8fa39a !important; }
 html.dark .text-mut         { color: #8fa39a !important; }
-/* Titles & primary text */
 html.dark .text-g           { color: #ffffff !important; }
 html.dark .text-g\/60,
 html.dark .text-g\/55,
@@ -715,6 +730,19 @@ html.dark .btn-base.border-g\/25.bg-white:hover {
   color: #ffffff !important;
 }
 
+/* My Events — "Events" button stays solid white in dark mode */
+html.dark .btn-base.btn-events.bg-white.border-g\/25 {
+  background-color: #ffffff !important;
+  color: #0a4a2b !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 4px 14px -4px rgba(0,0,0,.45) !important;
+}
+html.dark .btn-base.btn-events.bg-white.border-g\/25:hover {
+  background-color: #eaffef !important;
+  color: #0a4a2b !important;
+  border-color: #eaffef !important;
+}
+
 /* danger */
 html.dark .btn-base.bg-err {
   background-color: #b3261e !important;
@@ -727,8 +755,8 @@ html.dark .btn-base.bg-err:hover {
 }
 
 html.dark .cat-pill.hover\:bg-g-l:hover {
-  background-color: rgba(125,211,160,.18) !important;
-  border-color: rgba(125,211,160,.5) !important;
+  background-color: rgba(125,211,160,.14) !important;
+  border-color: rgba(125,211,160,.4) !important;
   color: #eaffef !important;
 }
 
@@ -744,17 +772,30 @@ html.dark input::placeholder { color: #6f8478 !important; }
 html.dark input:focus,
 html.dark select:focus,
 html.dark textarea:focus {
-  border-color: #4ade80 !important;
-  box-shadow: 0 0 0 3px rgba(74,222,128,.22) !important;
+  border-color: #5cb87a !important;
+  box-shadow: 0 0 0 3px rgba(92,184,122,.18) !important;
 }
 
 /* misc */
 html.dark .empty-state       { border-color: rgba(125,211,160,.24) !important; }
 html.dark .detail-info-row   { border-bottom-color: rgba(125,211,160,.1) !important; }
-html.dark footer             { background-color: rgba(8,23,15,.72) !important; border-color: rgba(125,211,160,.12) !important; backdrop-filter: blur(6px); }
-html.dark ::selection        { background: #2c6e46; color: #eaffef; }
-html.dark ::-webkit-scrollbar-thumb { background: #2c4a39; }
-html.dark ::-webkit-scrollbar-thumb:hover { background: #3e6b52; }
+html.dark footer             { background-color: rgba(10,26,19,.72) !important; border-color: rgba(125,211,160,.12) !important; backdrop-filter: blur(6px); }
+html.dark ::selection        { background: #275a3c; color: #eaffef; }
+html.dark ::-webkit-scrollbar-thumb { background: #294436; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #375a45; }
+
+/* dark mode — active pill uses light green tint (matches light mode) */
+html.dark .cat-pill.bg-g {
+  background-color: rgba(125,211,160,.20) !important;
+  border-color: rgba(125,211,160,.5) !important;
+  color: #eaffef !important;
+  box-shadow: none;
+  font-weight: 600;
+}
+html.dark .cat-pill.bg-g:hover {
+  background-color: rgba(125,211,160,.28) !important;
+  border-color: rgba(125,211,160,.65) !important;
+}
 
 /* reduced motion */
 @media (prefers-reduced-motion: reduce) {
@@ -765,20 +806,3 @@ html.dark ::-webkit-scrollbar-thumb:hover { background: #3e6b52; }
     scroll-behavior: auto !important;
   }
 }
-
-/* My Events — "Events" button stays solid white in dark mode */
-html.dark .btn-base.btn-events.bg-white.border-g\/25 {
-  background-color: #ffffff !important;
-  color: #0a4a2b !important;
-  border-color: #ffffff !important;
-  box-shadow: 0 4px 14px -4px rgba(0,0,0,.45) !important;
-}
-html.dark .btn-base.btn-events.bg-white.border-g\/25:hover {
-  background-color: #eaffef !important;
-  color: #0a4a2b !important;
-  border-color: #eaffef !important;
-}
-
-/* Confirmation page — footer hidden, gradient fills full viewport */
-body.confirm-view footer { display: none; }
-body.confirm-view        { background-color: #041a0e; }
