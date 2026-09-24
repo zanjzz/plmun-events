@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Discover events, activities, and opportunities happening on the PLMUN campus." />
+    <meta name="theme-color" content="#0a4a2b" />
+    <title>PLMUN Campus Events</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230a4a2b'/><path d='M8 22 L16 10 L24 22 Z' fill='none' stroke='white' stroke-width='1.8' stroke-linejoin='round'/><rect x='13' y='22' width='6' height='2' rx='1' fill='white'/></svg>" />
+
+    <!-- Fonts: Inter (body) + DM Serif Display (display headings) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+   <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap"
+    rel="stylesheet"
+  />
+
+    <!-- Lucide Icons (unpkg, tree-shakeable via createIcons) -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              g:     "#0a4a2b",
+              "g-d": "#062e1a",
+              "g-l": "#e8f5ee",
+              cream: "#fff7e6",
+              ok:    "#1fae3a",
+              err:   "#b3261e",
+              mut:   "#5a6b60",
+            },
+            fontFamily: {
+              sans:    ["Inter", "Segoe UI", "system-ui", "sans-serif"],
+              display: ["DM Serif Display", "Georgia", "serif"],
+            },
+            borderRadius: {
+              card: "1.125rem",
+            },
+            boxShadow: {
+              card:      "0 2px 12px -2px rgba(10,74,43,.14), 0 1px 4px -1px rgba(0,0,0,.07)",
+              "card-lg": "0 8px 32px -6px rgba(10,74,43,.22), 0 2px 8px -2px rgba(0,0,0,.10)",
+              form:      "0 2px 20px -4px rgba(10,74,43,.10), 0 1px 4px rgba(0,0,0,.05)",
+            },
+            keyframes: {
+              fadeUp: {
+                "0%":   { opacity: "0", transform: "translateY(16px)" },
+                "100%": { opacity: "1", transform: "translateY(0)"    },
+              },
+            },
+            animation: {
+              "fade-up": "fadeUp 260ms cubic-bezier(.4,0,.2,1) both",
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Global styles -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body class="bg-cream font-sans text-[15px] leading-relaxed text-neutral-900 antialiased">
+
+    <!-- ── NAV ─────────────────────────────────────────────────────── -->
+   <header class="sticky top-[env(safe-area-inset-top,0px)] z-30 bg-g text-white">
+      <div class="mx-auto flex max-w-[1080px] items-center justify-between gap-4 px-4 py-3 sm:px-6">
+
+        <!-- Logo -->
+        <a
+          href="#/"
+          class="flex items-center gap-2.5 text-[14.5px] font-semibold tracking-tight transition-opacity hover:opacity-80"
+          aria-label="PLMUN Campus Events — Home"
+        >
+          <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white/15">
+            <i data-lucide="landmark" class="h-4 w-4"></i>
+          </span>
+          <span class="hidden sm:inline">PLMUN <span class="font-normal opacity-70">Campus Events</span></span>
+          <span class="sm:hidden opacity-70">PLMUN</span>
+        </a>
+
+        <!-- Desktop nav -->
+        <nav id="nav" class="hidden items-center gap-0.5 md:flex" aria-label="Main navigation"></nav>
+
+        <!-- Mobile hamburger -->
+        <button
+          id="nav-toggle"
+          type="button"
+          class="flex h-9 w-9 items-center justify-center rounded-lg transition hover:bg-white/10 active:bg-white/15 md:hidden"
+          aria-label="Toggle navigation menu"
+          aria-expanded="false"
+          aria-controls="nav-mobile"
+        >
+          <i data-lucide="menu" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <!-- Mobile dropdown -->
+      <div
+        id="nav-mobile"
+        class="hidden border-t border-white/10 bg-g-d px-3 pb-3 pt-2 md:hidden"
+        aria-label="Mobile navigation"
+      ></div>
+    </header>
+
+    <!-- ── MAIN CONTENT ────────────────────────────────────────────── -->
+    <main id="app" class="min-h-[calc(100dvh-56px)]"></main>
+
+    <!-- ── FOOTER ──────────────────────────────────────────────────── -->
+    <footer class="border-t border-g/10 bg-white/50 py-8 text-center text-xs text-mut">
+      <div class="mx-auto max-w-[1080px] px-4">
+        <p class="font-semibold tracking-tight text-g">PLMUN Campus Events</p>
+        <p class="mt-1 opacity-60">Pamantasan ng Lungsod ng Muntinlupa &middot; Student Affairs Office</p>
+        <p class="mt-2 opacity-40">&copy; <span id="yr"></span> All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- ── TOAST ───────────────────────────────────────────────────── -->
+    <div
+      id="toast"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="fixed bottom-[calc(24px+env(safe-area-inset-bottom,0px))] left-1/2 z-[9999] flex items-center gap-2.5 rounded-xl bg-neutral-900 px-4 py-2.5 text-[13.5px] font-medium text-white shadow-2xl"
+    ></div>
+
+    <script src="app.js"></script>
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
