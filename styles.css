@@ -159,6 +159,11 @@ header.nav-hidden { transform: translateY(-100%); }
   isolation: isolate;
   height: 100vh;
 }
+
+.hero-highlight {
+  color: #0ebd28; 
+}
+
 .hero-section h1 em { font-style: italic; letter-spacing: -0.02em; }
 .hero-bg {
   position: absolute; inset: 0; z-index: 0;

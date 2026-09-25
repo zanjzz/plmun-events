@@ -660,13 +660,12 @@ function home() {
   <div class="hero-bg" aria-hidden="true"></div>
   <div class="hero-overlay" aria-hidden="true"></div>
 
-  <div class="relative z-10 mx-auto w-full max-w-[1080px] px-4 py-16 sm:px-6 sm:py-20 -translate-y-10 sm:-translate-y-10">
+  <div class="relative z-10 mx-auto w-full max-w-[1080px] px-4 py-16 sm:px-6 sm:py-20 -translate-y-[8vh] sm:-translate-y-5">
 
     <h1 class="max-w-[14ch] text-[clamp(60px,10vw,88px)] font-extrabold leading-[1.0] tracking-[-0.05em] text-white reveal"
-        style="animation-delay:50ms">
-      What's happening<br/><em class="font-display font-normal italic tracking-[-0.02em]">on campus</em>
+      style="animation-delay:50ms">
+      What's happening<br/><em class="font-display font-normal italic tracking-[-0.02em]">on <span class="hero-highlight">campus</span></em>
     </h1>
-
     <p class="mt-5 mb-8 max-w-[48ch] text-[15.5px] leading-relaxed text-white/85 reveal"
        style="animation-delay:100ms">
       ${firstName
