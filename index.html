@@ -18,23 +18,41 @@
     rel="stylesheet"
   />
 
+    <!-- Resource hints: the background scripts (Vanta/Three.js and UnicornStudio)
+         and Lucide are all fetched at runtime from these two origins. Warming up
+         the connection (DNS + TLS) ahead of time shaves time off whichever one
+         loads first, without changing what loads or how it looks. -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://unpkg.com" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+    <link rel="dns-prefetch" href="https://unpkg.com" />
+
     <!-- Lucide Icons (unpkg, tree-shakeable via createIcons) -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="stylesheet" href="styles.css" />
 
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+
+      function withOpacity(cssVar) {
+        return ({ opacityValue }) =>
+          opacityValue === undefined
+            ? `rgb(var(${cssVar}))`
+            : `rgba(var(${cssVar}), ${opacityValue})`;
+      }
+
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              g:     "#0a4a2b",
-              "g-d": "#062e1a",
-              "g-l": "#e8f5ee",
-              cream: "#fff7e6",
-              ok:    "#1fae3a",
-              err:   "#b3261e",
-              mut:   "#5a6b60",
+              g:     withOpacity("--g-rgb"),
+              "g-d": withOpacity("--g-dark-rgb"),
+              "g-l": withOpacity("--g-light-rgb"),
+              cream: withOpacity("--cream-rgb"),
+              ok:    withOpacity("--ok-rgb"),
+              err:   withOpacity("--err-rgb"),
+              mut:   withOpacity("--mut-rgb"),
             },
             fontFamily: {
               sans:    ["Inter", "Segoe UI", "system-ui", "sans-serif"],
@@ -44,9 +62,9 @@
               card: "1.125rem",
             },
             boxShadow: {
-              card:      "0 2px 12px -2px rgba(10,74,43,.14), 0 1px 4px -1px rgba(0,0,0,.07)",
-              "card-lg": "0 8px 32px -6px rgba(10,74,43,.22), 0 2px 8px -2px rgba(0,0,0,.10)",
-              form:      "0 2px 20px -4px rgba(10,74,43,.10), 0 1px 4px rgba(0,0,0,.05)",
+              card:      "0 2px 12px -2px rgba(var(--g-rgb),.14), 0 1px 4px -1px rgba(var(--black-rgb),.07)",
+              "card-lg": "0 8px 32px -6px rgba(var(--g-rgb),.22), 0 2px 8px -2px rgba(var(--black-rgb),.10)",
+              form:      "0 2px 20px -4px rgba(var(--g-rgb),.10), 0 1px 4px rgba(var(--black-rgb),.05)",
             },
             keyframes: {
               fadeUp: {
@@ -61,9 +79,6 @@
         },
       };
     </script>
-
-    <!-- Global styles -->
-    <link rel="stylesheet" href="styles.css" />
   </head>
 
  <body class="font-sans text-[15px] leading-relaxed text-neutral-900 antialiased">

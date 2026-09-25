@@ -143,7 +143,7 @@ const go   = (h)  => { location.hash = h; };
    THUMB HELPER
    ===================================================================== */
 const thumb = (e, cls = "") => e.img
-  ? `<img src="${esc(e.img)}" alt="" loading="lazy" decoding="async"
+  ? `<img src="${esc(e.img)}" alt="" loading="lazy" decoding="async" draggable="false"
           class="${cls} object-cover w-full h-full"
           onerror="this.style.display='none'" />`
   : "";
@@ -211,7 +211,7 @@ function toggleMobileNav() {
 }
 
 /* =====================================================================
-   THEME (light / dark) + BACKGROUNDS
+   THEME (light / dark) + BACKGROUND
    ===================================================================== */
 function updateThemeIcon() {
   const btn = document.getElementById("theme-toggle");
@@ -246,6 +246,11 @@ function loadScriptOnce(src) {
     const s = document.createElement("script");
     s.src = src;
     s.async = true;
+    // Purely a scheduling hint for the browser's network stack — these are
+    // decorative background layers, not needed for first paint, so they
+    // shouldn't compete for bandwidth/priority with anything the user is
+    // actually looking at yet. Unsupported browsers just ignore it.
+    s.fetchPriority = "low";
     s.onload = resolve;
     s.onerror = reject;
     document.head.appendChild(s);
@@ -324,7 +329,17 @@ function updateBackgrounds() {
 function initBackgrounds() {
   BG.skip = !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
          || !!navigator.connection?.saveData;
-  requestAnimationFrame(() => setTimeout(updateBackgrounds, 60));
+
+  // Same effect as the previous fixed 60ms delay — let first paint happen
+  // before spending bandwidth on decorative background libraries — but
+  // scheduled on the browser's actual idle signal instead of a guessed
+  // timeout, so it fires as soon as it safely can rather than always
+  // waiting the full 60ms (and still falls back to the old timeout on
+  // browsers without requestIdleCallback, e.g. Safari).
+  const schedule = window.requestIdleCallback
+    ? (cb) => requestIdleCallback(cb, { timeout: 300 })
+    : (cb) => setTimeout(cb, 60);
+  requestAnimationFrame(() => schedule(updateBackgrounds));
 }
 
 /* =====================================================================
@@ -513,7 +528,7 @@ const SUM     = "mb-2 rounded-xl bg-g-l px-4 py-3 text-[13px] leading-relaxed te
 const LBL     = "mt-4 mb-1.5 block text-[11.5px] font-bold uppercase tracking-[.07em] text-g/60";
 const INPUT   = "w-full rounded-xl border-[1.5px] border-g/25 bg-white px-4 py-2.5 text-[14.5px] placeholder:text-neutral-400 aria-[invalid=true]:border-err aria-[invalid=true]:bg-red-50 transition-all";
 const ERR     = "mt-4 flex items-start gap-2.5 rounded-xl border-l-4 border-err bg-red-50 px-4 py-3 text-[13.5px] font-semibold text-err";
-const ROW     = "mt-6 flex flex-wrap justify-center gap-3";
+const ROW = "mt-6 flex flex-wrap justify-center gap-3 btn-pair";
 const EQ      = "[&>*]:min-w-[120px] [&>*]:flex-1";
 const EMPTY   = "mt-6 rounded-2xl border-2 border-dashed border-g/20 px-6 py-16 text-center empty-state";
 
@@ -641,11 +656,11 @@ function home() {
   const joinedCount = Object.keys(S.joined).length;
 
   return `
-<section class="hero-section relative flex min-h-[70vh] w-full items-center overflow-hidden sm:min-h-[80vh] lg:min-h-[88vh] lg:max-h-[820px]">
+<section class="hero-section relative flex min-h-[70vh] w-full items-center overflow-hidden sm:min-h-[80vh] lg:min-h-[88vh] lg:max-h-[820px] mb-5">
   <div class="hero-bg" aria-hidden="true"></div>
   <div class="hero-overlay" aria-hidden="true"></div>
 
-  <div class="relative z-10 mx-auto w-full max-w-[1080px] px-4 py-16 sm:px-6 sm:py-20">
+  <div class="relative z-10 mx-auto w-full max-w-[1080px] px-4 py-16 sm:px-6 sm:py-20 -translate-y-10 sm:-translate-y-10">
 
     <h1 class="max-w-[14ch] text-[clamp(60px,10vw,88px)] font-extrabold leading-[1.0] tracking-[-0.05em] text-white reveal"
         style="animation-delay:50ms">
@@ -677,7 +692,7 @@ function home() {
 <div class="${WRAP}">
   <h2 class="${H1S} reveal">Featured this week</h2>
   <p class="${SUB} reveal" style="animation-delay:40ms">
-    Highlights from the upcoming week — open any card to register.
+    Highlights from the upcoming week.
   </p>
 
   <div class="${GRID} reveal-stagger">
@@ -809,7 +824,7 @@ function detail(e) {
         ${infoRow("building-2", "Organized by", esc(e.o))}
       </div>
 
-      <div class="flex flex-wrap justify-end gap-3">
+      <div class="flex flex-wrap justify-end gap-3 btn-pair">
         <button class="${btn("o")}" data-act="save" data-v="${e.id}" aria-pressed="${saved}">
           ${saved ? `${icon("bookmark-check", { size: 15 })} Saved` : `${icon("bookmark", { size: 15 })} Save`}
         </button>
@@ -977,7 +992,7 @@ function confirmView(e) {
         </span>
       </label>
 
-      <div class="flex w-full gap-2 sm:w-auto">
+      <div class="flex w-full gap-2 sm:w-auto btn-pair">
         <a class="${btn("ow")} flex-1 sm:flex-initial" href="#/">Home</a>
         <a class="${btn("p")}  flex-1 sm:flex-initial" href="#/my-events">My Events</a>
       </div>
@@ -1079,7 +1094,7 @@ function mine() {
          </div>`}
   </div>
 
-  <div class="mt-8 flex flex-wrap gap-3 reveal justify-end">
+  <div class="mt-8 flex flex-wrap gap-3 reveal justify-end btn-pair">
     <a class="${btn("o")}" href="#/">Home</a>
     <a class="${btn("o")} btn-events" href="#/events">
       ${icon("arrow-left", { size: 15 })} Events
