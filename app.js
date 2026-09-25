@@ -294,6 +294,11 @@ async function mountVanta() {
 function unmountVanta() {
   const el = document.getElementById("vanta-bg");
   if (el) el.classList.remove("active");
+  if (BG.vanta) {
+    BG.vanta.destroy();
+    BG.vanta = null;
+    BG.vantaLoaded = false;
+  }
 }
 
 async function mountUnicorn() {
@@ -318,6 +323,11 @@ async function mountUnicorn() {
 function unmountUnicorn() {
   const el = document.getElementById("aura-bg");
   if (el) el.classList.remove("active");
+  if (window.UnicornStudio && BG.uniLoaded) {
+    window.UnicornStudio.destroy();
+    window.UnicornStudio.isInitialized = false;
+  }
+  BG.uniLoaded = false;
 }
 
 function updateBackgrounds() {
